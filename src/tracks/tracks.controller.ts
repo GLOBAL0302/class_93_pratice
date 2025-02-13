@@ -35,8 +35,7 @@ export class TracksController {
     });
 
     const track = await newTrack.save();
-    console.log(album);
-    return album;
+    return track;
   }
 
   @Delete(':trackId')

@@ -9,6 +9,7 @@ import { Artist, ArtistSchema } from './schemas/artist.schema';
 import { Album, AlbumSchema } from './schemas/album.schema';
 import { Track, TrackSchema } from './schemas/track.schema';
 
+
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost/spotify'),
