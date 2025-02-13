@@ -1,29 +1,29 @@
-import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
-import mongoose, {SchemaTypes} from "mongoose";
-import {Artist} from "./artist.schema";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
+import { Artist } from './artist.schema';
 
 export type AlbumDocument = Album & Document;
 
 @Schema()
-export class Album{
-    @Prop({
-        type:mongoose.SchemaTypes.ObjectId,
-        ref:'Artist',
-        required:true,
-    })
-    artist:Artist;
+export class Album {
+  @Prop({
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'Artist',
+    required: true,
+  })
+  artist: Artist;
 
-    @Prop({required: true})
-    title:string
+  @Prop({ required: true })
+  title: string;
 
-    @Prop({default:false})
-    isPublished:boolean
+  @Prop({ default: false })
+  isPublished: boolean;
 
-    @Prop( {required: true})
-    create_at:number
+  @Prop({ required: true })
+  create_at: number;
 
-    @Prop({default:null, required:true})
-    image:string
+  @Prop({ default: null, required: true })
+  image: string;
 }
 
-export const AlbumSchema = SchemaFactory.createForClass(Album)
+export const AlbumSchema = SchemaFactory.createForClass(Album);

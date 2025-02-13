@@ -1,4 +1,4 @@
 export class CreateArtistDto {
-    title: string;
-    isPublished:boolean;
+  title: string;
+  isPublished: boolean;
 }
