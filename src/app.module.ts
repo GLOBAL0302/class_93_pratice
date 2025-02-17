@@ -16,14 +16,14 @@ import { User, UserSchema } from './schemas/user.schema';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/spotify'),
+    MongooseModule.forRoot('mongodb://localhost/spotify2'),
     MongooseModule.forFeature([
       { name: Artist.name, schema: ArtistSchema },
       { name: Album.name, schema: AlbumSchema },
       { name: Track.name, schema: TrackSchema },
       { name: User.name, schema: UserSchema },
     ]),
-    PassportModule
+    PassportModule,
   ],
   controllers: [AppController, ArtistsController, AlbumsController, TracksController, UsersController],
   providers: [AppService, AuthService, LocalStrategy],

@@ -1,17 +1,19 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Post, Req, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IUserDocument, User } from '../schemas/user.schema';
 import { RegisterUserDto } from './register-user.dto';
 import { AuthGuard } from '@nestjs/passport';
-import {Request, Response} from 'express';
+import { Request } from 'express';
+import { TokenAuthGuard } from '../token-auth/token-auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(@InjectModel(User.name) private userModel: Model<IUserDocument>) {}
 
   @Post()
-  registerUser(@Body() registerUserDto: RegisterUserDto) {
+  async registerUser(@Body() registerUserDto: RegisterUserDto) {
+    console.log(registerUserDto.email);
     const user: IUserDocument = new this.userModel({
       email: registerUserDto.email,
       password: registerUserDto.password,
@@ -20,15 +22,25 @@ export class UsersController {
     });
 
     user.generateToken();
-    return user.save();
+    return await user.save()
   }
+
 
   @UseGuards(AuthGuard('local'))
   @Post('session')
-  login(@Req() req:Request<{user:User}>){
-    return req.user
+  login(@Req() req: Request<{ user: User }>) {
+    return req.user;
   }
 
+  @UseGuards(TokenAuthGuard)
+  @Delete('session')
+  async logOut(@Req() req: Request<{ user: User }>) {
+
+    const user = await this.userModel.findOne(req.user);
+    if (user) {
+      user.generateToken();
+      user.save();
+      return { message: 'User logged out successfully', user };
+    }
+  }
 }
-
-

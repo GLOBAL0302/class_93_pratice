@@ -6,8 +6,8 @@ import {
   NotFoundException,
   Param,
   Post,
-  Query,
-  UploadedFile,
+  Query, Req,
+  UploadedFile, UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -16,6 +16,10 @@ import { Album, AlbumDocument } from '../schemas/album.schema';
 import { Model } from 'mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateAlbumDto } from './create-album-dto';
+import { AuthGuard } from '@nestjs/passport';
+import { TokenAuthGuard } from '../token-auth/token-auth.guard';
+import { IUserDocument, User } from '../schemas/user.schema';
+import {Request} from 'express';
 
 @Controller('albums')
 export class AlbumsController {
@@ -40,6 +44,9 @@ export class AlbumsController {
     return album;
   }
 
+
+
+  @UseGuards(TokenAuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('image', { dest: './public/uploads/albums' }))
   async create(@UploadedFile() file: Express.Multer.File, @Body() albumDto: CreateAlbumDto) {
@@ -57,10 +64,15 @@ export class AlbumsController {
     return album;
   }
 
+  @UseGuards(TokenAuthGuard)
   @Delete(':albumId')
-  async deleteAlbum(@Param('albumId') albumId: string) {
-    const album = await this.albumModel.deleteOne({ _id: albumId });
-    if (!album) throw new NotFoundException(`Album with id ${albumId} not found`);
-    return { message: 'album deleted successfully', album };
+  async deleteAlbum(@Param('albumId') albumId: string ,@Req() req:Request<{user:User}>) {
+
+    const user = req.user as IUserDocument;
+    if(user.role === "admin"){
+      const album = await this.albumModel.deleteOne({ _id: albumId });
+      if (!album) throw new NotFoundException(`Album with id ${albumId} not found`);
+      return { message: 'album deleted successfully', album };
+    }
   }
 }

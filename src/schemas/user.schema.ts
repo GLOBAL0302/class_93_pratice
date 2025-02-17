@@ -1,14 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { randomUUID } from 'crypto';
 import { Document } from 'mongoose';
+import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcrypt';
+
+// export type UserDocument = User & Document;
 
 export interface IUserDocument extends Document {
   email: string;
   password: string;
   token: string;
   displayName?: string;
-  role?: string;
+  role:string
   generateToken: () => void;
   checkPassword: (password: string) => Promise<boolean>;
 }
@@ -20,6 +22,9 @@ export class User {
   @Prop({ required: true, unique: true })
   email: string;
 
+  @Prop()
+  role:string
+
   @Prop({ required: true })
   password: string;
 
@@ -28,9 +33,6 @@ export class User {
 
   @Prop()
   displayName: string;
-
-  @Prop({ required: true, default: 'user' })
-  role: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
@@ -39,7 +41,10 @@ UserSchema.methods.generateToken = function (this: IUserDocument) {
   this.token = randomUUID();
 };
 
-UserSchema.methods.checkPassword = function (this: IUserDocument, password: string) {
+UserSchema.methods.checkPassword = function (
+  this: IUserDocument,
+  password: string,
+) {
   return bcrypt.compare(password, this.password);
 };
 
